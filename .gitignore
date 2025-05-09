@@ -1,0 +1,55 @@
+# Build artifacts
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Visual Studio Code
+.vscode/
+
+# Rider
+.idea/
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Dependency directories
+node_modules/
+
+# Publish output
+wwwroot/dist/
+wwwroot/build/
+
+# Environment variables
+.env
+.env.*
+
+# Backup files
+*.bak
+*.swp
+*.orig
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# Coverage
+coverage/
+*.coverage
+*.coveragexml
+*.codecov
