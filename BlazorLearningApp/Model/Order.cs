@@ -4,7 +4,7 @@
     {
         public int OrderId { get; set; }
 
-        public string UserId { get; set; }
+        public string UserId { get; set; } = "system";
 
         public DateTime CreatedTime { get; set; }
 

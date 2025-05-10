@@ -13,7 +13,7 @@ builder.Services.AddControllers();
 
 // Register the pizzas service
 builder.Services.AddScoped<PizzaService>();
-builder.Services.AddScoped<OrderState>();
+builder.Services.AddSingleton<OrderState>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddSqlite<PizzaStoreContext>("Data Source=pizza.db");
