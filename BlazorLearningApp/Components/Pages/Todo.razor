@@ -1,20 +1,22 @@
 ﻿@page "/todo"
 @rendermode InteractiveServer
 
-<h3>Todo (@todoItems.Count(predicate => !predicate.IsDone))</h3>
+<div class="template-cont">
+    <h3>Todo (@todoItems.Count(predicate => !predicate.IsDone))</h3>
 
-<ul>
-    @foreach (var item in todoItems)
-    {
-        <li>
-            <input type="checkbox" @bind="@item.IsDone" />
-            <input @bind="@item.Title"/>
-        </li>
-    }
-</ul>
+    <ul>
+        @foreach (var item in todoItems)
+        {
+            <li>
+                <input type="checkbox" @bind="@item.IsDone" />
+                <input @bind="@item.Title" />
+            </li>
+        }
+    </ul>
 
-<input @bind="todoInput" />
-<button @onclick="AddTodo">Add Todo</button>
+    <input @bind="todoInput" />
+    <button @onclick="AddTodo">Add Todo</button>
+</div>
 
 @code {
     private List<TodoItem> todoItems = new();
@@ -22,9 +24,9 @@
 
     private void AddTodo(MouseEventArgs args)
     {
-        if(!string.IsNullOrWhiteSpace(todoInput))
+        if (!string.IsNullOrWhiteSpace(todoInput))
         {
-            todoItems.Add(new TodoItem {Title = todoInput});
+            todoItems.Add(new TodoItem { Title = todoInput });
             todoInput = "";
         }
     }

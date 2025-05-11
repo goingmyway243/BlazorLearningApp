@@ -3,15 +3,17 @@
 
 <PageTitle>Counter</PageTitle>
 
-<h1>Counter</h1>
+<div class="template-content">
+    <h1>Counter</h1>
 
-<p role="status">Current count: @currentCount</p>
+    <p role="status">Current count: @currentCount</p>
 
-<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+    <button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
 
-<input @bind="inputText" />
-<button @onclick="() => inputText = string.Empty">Clear</button>
-<p>@inputText</p>
+    <input @bind="inputText" />
+    <button @onclick="() => inputText = string.Empty">Clear</button>
+    <p>@inputText</p>
+</div>
 
 @code {
     [Parameter]
@@ -20,8 +22,15 @@
 
     private string inputText = string.Empty;
 
-    private void IncrementCount()
+    private void IncrementCount(MouseEventArgs eventArgs)
     {
-        currentCount+= IncrementAmount;
+        if (eventArgs.CtrlKey)
+        {
+            currentCount += IncrementAmount * 10;
+        }
+        else
+        {
+            currentCount += IncrementAmount;
+        }
     }
 }
