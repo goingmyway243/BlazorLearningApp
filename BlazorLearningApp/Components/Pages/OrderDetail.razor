@@ -1,10 +1,12 @@
 ﻿@using BlazorLearningApp.Model
 @using BlazorLearningApp.Components.Layout
+
 @page "/myorders/{orderId:int}"
 @inject NavigationManager NavigationManager
 @inject HttpClient HttpClient
 @attribute [StreamRendering]
 @layout PizzaLayout
+@implements IDisposable
 
 <div class="main">
     @if (invalidOrder)
@@ -17,7 +19,7 @@
         <div class="track-order">
             <div class="track-order-title">
                 <h2>
-                  <text>Loading...</text>
+                    <text>Loading...</text>
                 </h2>
                 <p class="ml-auto mb-0">
                     ...
@@ -32,22 +34,29 @@
                 <h2>
                     Order placed @orderWithStatus.Order.CreatedTime.ToLongDateString()
                 </h2>
-                <p class="ml-auto mb-0">
+                <p class="ms-auto mb-0">
                     Status: <strong>@orderWithStatus.StatusText</strong>
                 </p>
             </div>
             <div class="track-order-body">
                 <div class="track-order-details">
-                  @foreach (var pizza in orderWithStatus.Order.Pizzas)
-                  {
-                      <p>
-                          <strong>
-                              @(pizza.Size)"
-                              @pizza.Special.Name
-                              (£@pizza.GetFormattedTotalPrice())
-                          </strong>
-                      </p>
-                  }
+                    @if (IsOrderIncomplete)
+                    {
+                        <div class="spinner-grow text-danger float-end" role="status">
+                            <span class="visually-hidden">Checking your order status...</span>
+                        </div>
+                    }
+
+                    @foreach (var pizza in orderWithStatus.Order.Pizzas)
+                    {
+                        <p>
+                            <strong>
+                                @(pizza.Size)"
+                                @pizza.Special.Name
+                                (£@pizza.GetFormattedTotalPrice())
+                            </strong>
+                        </p>
+                    }
                 </div>
             </div>
         </div>
@@ -60,17 +69,36 @@
     OrderWithStatus orderWithStatus;
     bool invalidOrder = false;
 
-    protected override async Task OnParametersSetAsync()
+    bool IsOrderIncomplete =>
+    orderWithStatus is null || orderWithStatus.IsDelivered == false;
+
+    PeriodicTimer timer = new(TimeSpan.FromSeconds(3));
+
+    protected override async Task OnParametersSetAsync() => await GetLatestOrderStatusUpdatesAsync();
+
+    protected override Task OnAfterRenderAsync(bool firstRender) => firstRender ? StartPollingTimerAsync() : Task.CompletedTask;
+
+    async Task GetLatestOrderStatusUpdatesAsync()
     {
-      try
-      {
-          orderWithStatus = await HttpClient.GetFromJsonAsync<OrderWithStatus>(
-              $"{NavigationManager.BaseUri}api/orders/{OrderId}");
-      }
-      catch (Exception ex)
-      {
-          invalidOrder = true;
-          Console.Error.WriteLine(ex);
-      }
+        try
+        {
+            orderWithStatus = await HttpClient.GetFromJsonAsync<OrderWithStatus>($"{NavigationManager.BaseUri}api/orders/{OrderId}");
+        }
+        catch (Exception ex)
+        {
+            invalidOrder = true;
+            Console.Error.WriteLine(ex);
+        }
     }
+
+    async Task StartPollingTimerAsync()
+    {
+        while (IsOrderIncomplete && await timer.WaitForNextTickAsync())
+        {
+            await GetLatestOrderStatusUpdatesAsync();
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose() => timer.Dispose();
 }
