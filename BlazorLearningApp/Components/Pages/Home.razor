@@ -1,4 +1,5 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
@@ -9,9 +10,15 @@
 
     <Counter IncrementAmount="10" />
 
-    <Modal Title="My first Modal dialog" Show="true">
+    <Modal Title="My first Modal dialog" Show="showDialog" OnCancel="() => showDialog = false">
         <p>
             This is my first modal dialog
         </p>
     </Modal>
+
+    <button class="btn btn-primary" @onclick="() => showDialog = true">Show Dialog</button>
 </div>
+
+@code {
+    bool showDialog = false;
+}
